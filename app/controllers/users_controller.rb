@@ -9,11 +9,11 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.new(user_params)    # Not the final implementation!
+    @user = User.new(user_params)
     if @user.save
-    	flash[:success] = "Bem vindo ao Sistema de Orientação Acadêmica!"
+      log_in @user
+      flash[:success] = "Bem vindo ao Sistema de Orientação Acadêmica!"
       redirect_to @user
-      # Handle a successful save.
     else
       render 'new'
     end
@@ -21,8 +21,8 @@ class UsersController < ApplicationController
 
   private
 
-  def user_params
-    params.require(:user).permit(:name, :email, :password,
-                                 :password_confirmation)
-  end
+    def user_params
+      params.require(:user).permit(:name, :email, :password,
+                                   :password_confirmation)
+    end
 end
