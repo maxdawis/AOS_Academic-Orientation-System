@@ -6,12 +6,18 @@ class SessionsController < ApplicationController
   def create
     user = User.find_by(email: params[:session][:email].downcase)
     if user && user.authenticate(params[:session][:password])
-      # Log the user in and redirect to the user's show page.
-     	log_in user
-      params[:session][:remember_me] == '1' ? remember(user) : forget(user)
-      redirect_back_or user
+      if user.activated?
+        log_in user
+        params[:session][:remember_me] == '1' ? remember(user) : forget(user)
+        redirect_back_or user
+      else
+        message  = "Conta não ativada. "
+        message += "Cheque seu email para acessar o link de ativação."
+        flash[:warning] = message
+        redirect_to root_url
+      end
     else
-      flash.now[:danger] = 'Combinação inválida de email/senha.' # Not quite right!
+      flash.now[:danger] = 'Combinação inválida de email/senha.'
       render 'new'
     end
   end
